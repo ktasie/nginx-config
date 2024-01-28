@@ -1,3 +1,4 @@
+import fs from 'fs'
 import promptSync from 'prompt-sync';
 import singleDomainBlockConfig from './singleDomainBlockConfig.js';
 
@@ -7,10 +8,14 @@ const menuItem = new Map();
 
 
 menuItem.set(1, '1. Create a new domain configuration block on nginx: ');
-menuItem.set(2, '2. Create bulk domains configuration block on nginx (upload a file domains.txt): ');
+menuItem.set(2, '2. Create bulk domains SSL based configuration block on nginx (domains.txt): ');
 menuItem.set(3, '3. Delete a single domain configurations block and SSL certificate from nginx: ')
 menuItem.set(4, '4. Exit:');
 //menuItem.set('question', 'What do you want to do? (select 1-4): ');
+
+const domainPath = './domains.txt';
+let arrDomains = [];
+
 
 for(let [key, values] of menuItem){
     console.log(values)
@@ -32,30 +37,42 @@ while(feedback.num < 1 || feedback.num > 4){
 
 if(feedback.num === 4){
     exitProgram();
+} else if(feedback.num === 1){
+    feedback.domain = prompt('What is the domain name (without www)? ');
+
+    while(feedback.ssl === ''){
+        
+        feedback.ssl = prompt(`Will ${feedback.domain} be secured (y/n)? `)
+        feedback.ssl = feedback.ssl.toUpperCase();
+        //console.log(feedback)
+
+    }
+} else if(feedback.num === 2){
+   const domains =  fs.readFileSync(`${domainPath}`,'utf-8',);
+   arrDomains = domains.split('\r\n')
+  
+   
 }
 
-feedback.domain = prompt('What is the domain name (without www)? ');
 
-while(feedback.ssl === ''){
-    
-    feedback.ssl = prompt(`Will ${feedback.domain} be secured (y/n)? `)
-    feedback.ssl = feedback.ssl.toUpperCase();
-    console.log(feedback)
-
-}
 
 switch(feedback.num){
     case(1): 
         singleDomainBlockConfig(feedback)
         break;
-    case(2): 
-        console.log('2 selected');
+    case(2):
+        // Loop through number of domains
+       for(let i=0; i < arrDomains.length; i++){
+            feedback.ssl='N';
+            feedback.domain = arrDomains[i];
+            singleDomainBlockConfig(feedback)
+        }       
         break;
     case(3):
         console.log('3 selected')
         break;
     default:
-        console.log('ends')
+        console.log('Please contact Admin. How did you get here!')
 }
 
 
