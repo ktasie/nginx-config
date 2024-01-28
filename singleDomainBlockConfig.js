@@ -30,7 +30,7 @@ export default function singleDomainBlockConfig(choices) {
             listen 80;
             listen [::]:80;
             server_name ${domain} www.${domain};
-            return 301 https://$domain;
+            return 301 https://${domain};
         }
 
         server {
@@ -41,7 +41,8 @@ export default function singleDomainBlockConfig(choices) {
             ssl_certificate_key /etc/letsencrypt/live/${domain}/privkey.pem;
 
             ssl_protocols TLSv1.2 TLSv1.3;
-            ssl_ciphers 'TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384';
+            ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384;
+            ssl_conf_command Ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256;
             ssl_prefer_server_ciphers off;
 
             location / {
@@ -57,7 +58,7 @@ export default function singleDomainBlockConfig(choices) {
 
         // Run Certbot to obtain SSL certificate
         try {
-            execSync(`sudo certbot certonly --nginx -d ${domain} -d www.${domain} --non-interactive --agree-tos -m ktasie@gmail.com --test-cert`);
+            execSync(`sudo certbot certonly --nginx -d ${domain} -d www.${domain} --non-interactive --agree-tos -m gxcpoperations@galaxybackbone.com.ng --test-cert`);
             console.log(`SSL certificate obtained successfully for ${domain}!`);
 
             
