@@ -1,4 +1,5 @@
 import fs from 'fs';
+import os from 'os';
 import promptSync from 'prompt-sync';
 import singleDomainBlockConfig from './singleDomainBlockConfig.js';
 import deleteDomainBlock from './deleteDomainBlock.js';
@@ -52,7 +53,7 @@ if (feedback.num === 4) {
   }
 } else if (feedback.num === 2) {
   const domains = fs.readFileSync(`${domainPath}`, 'utf-8');
-  arrDomains = domains.split('\r\n');
+  arrDomains = domains.split(os.EOL);
 } else if (feedback.num === 3) {
   while (feedback.domain === '') {
     feedback.domain = prompt('What is the domain name (without www)? ');
@@ -66,7 +67,7 @@ switch (feedback.num) {
   case 2:
     // Loop through number of domains
     for (let i = 0; i < arrDomains.length; i++) {
-      feedback.ssl = 'N';
+      feedback.ssl = 'Y';
       feedback.domain = arrDomains[i];
       singleDomainBlockConfig(feedback);
     }
